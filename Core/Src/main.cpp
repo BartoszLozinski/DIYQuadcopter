@@ -35,7 +35,7 @@ int main()
     MX_USART1_UART_Init();
     MX_I2C1_Init();
     MX_TIM3_Init();
-
+    MX_SPI2_Init();
     
     RegisterLevel::SoftwareTimer btUartResetTimer{ 2000 };
     RegisterLevel::SoftwareTimer btUartPollTimer{ 1 };
@@ -146,6 +146,11 @@ int main()
     uart2.ConfigureInterruptsPriority(IRQn_Type::USART2_IRQn, 1);
     uart2.Init(uart2Tx, uart2Rx, 115200);
     ld2.Init();
+    ioexp_cs.Init();
+    ioexp_cs.Set();
+    //pc2 - spi2_miso
+    //pc3 - spi2_mosi
+    //pb10 - spi2_sck`
 
     tim3_ch1_pa6.Start();
 

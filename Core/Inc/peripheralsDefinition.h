@@ -7,6 +7,7 @@
 
 Peripherals::RegisterLevel::GpioAlternate<2> uart2Tx{ GPIOA, Peripherals::RegisterLevel::Gpio::AlternateFunction::AF7 };
 Peripherals::RegisterLevel::GpioAlternate<3> uart2Rx{ GPIOA, Peripherals::RegisterLevel::Gpio::AlternateFunction::AF7 };
+Peripherals::RegisterLevel::GpioOutput<0> ioexp_cs{ GPIOC };
 Peripherals::RegisterLevel::Uart uart2{ USART2 };
 
 Peripherals::RegisterLevel::GpioOutput<5> ld2{ GPIOA };

@@ -10,6 +10,7 @@ extern I2C_HandleTypeDef hi2c1;
 extern UART_HandleTypeDef huart1;
 extern UART_HandleTypeDef huart2;
 extern TIM_HandleTypeDef htim3;
+extern SPI_HandleTypeDef hspi2;
 
 // CUBE GENERATED
 /* Private function prototypes -----------------------------------------------*/
@@ -19,6 +20,8 @@ void MX_USART2_UART_Init(void);
 void MX_USART1_UART_Init(void);
 void MX_I2C1_Init(void);
 void MX_TIM3_Init(void);
+void MX_SPI2_Init();
+
 
 //END - CUBE GENERATED
 
