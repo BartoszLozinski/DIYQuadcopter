@@ -11,6 +11,7 @@
 #include "../../Peripherals/UART/LineParser.hpp"
 #include "../../Peripherals/Timer/HAL/Pwm.hpp"
 #include "../../Devices/LPS25HB_Async.hpp"
+#include "../../Devices/MCP23S08.hpp"
 
 #include "../Inc/peripheralsDefinition.h"
 
@@ -146,11 +147,19 @@ int main()
     uart2.ConfigureInterruptsPriority(IRQn_Type::USART2_IRQn, 1);
     uart2.Init(uart2Tx, uart2Rx, 115200);
     ld2.Init();
+
     ioexp_cs.Init();
     ioexp_cs.Set();
     //pc2 - spi2_miso
     //pc3 - spi2_mosi
     //pb10 - spi2_sck`
+    RegisterLevel::SoftwareTimer mcp23s08ToggleTimer{ 250 };
+    static constexpr uint8_t mcp23s08WriteAddress = 0x40;
+    uint8_t mcp23s08_pg0_on = 0x01;
+    uint8_t gpio_config[3] { mcp23s08WriteAddress, static_cast<uint8_t>(Device::MCP23S08Register::IODIR), 0xFE }; //all input but pg0
+    ioexp_cs.Clear();
+    HAL_SPI_Transmit(&hspi2, gpio_config, sizeof(gpio_config), HAL_MAX_DELAY);
+    ioexp_cs.Set();
 
     tim3_ch1_pa6.Start();
 
@@ -185,6 +194,21 @@ int main()
         
         // End of UART Test
         scheduler.Run();
+
+        if (mcp23s08ToggleTimer.IsExpired())
+        {
+            mcp23s08ToggleTimer.Reset();
+            if (mcp23s08_pg0_on == 0x01)
+                mcp23s08_pg0_on = 0x00;
+            else
+                mcp23s08_pg0_on = 0x01;
+
+            uint8_t led_command[3] = { mcp23s08WriteAddress, static_cast<uint8_t>(Device::MCP23S08Register::OLAT), mcp23s08_pg0_on };
+
+            ioexp_cs.Clear();
+            HAL_SPI_Transmit(&hspi2, led_command, sizeof(led_command), HAL_MAX_DELAY);
+            ioexp_cs.Set();
+        }
     }
 }
 

@@ -20,7 +20,7 @@ void MX_USART2_UART_Init(void);
 void MX_USART1_UART_Init(void);
 void MX_I2C1_Init(void);
 void MX_TIM3_Init(void);
-void MX_SPI2_Init();
+void MX_SPI2_Init(void);
 
 
 //END - CUBE GENERATED

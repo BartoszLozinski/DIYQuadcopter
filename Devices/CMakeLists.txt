@@ -7,6 +7,7 @@ set(${target_name}_src  LPS25HBBase.cpp
 set(${target_name}_hpp  LPS25HBBase.hpp
                         LPS25HB.hpp
                         LPS25HB_Async.hpp
+                        MCP23S08.hpp
                         Measurement.hpp)
 
 
