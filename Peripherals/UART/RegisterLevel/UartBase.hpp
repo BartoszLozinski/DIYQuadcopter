@@ -57,18 +57,32 @@ namespace Peripherals
                 else if (usart == USART2)
                     RCC->APB1ENR1 |= RCC_APB1ENR1_USART2EN;
             }
-            
-            // TODO configure also for other uarts (especially uart1 for this project)
-            // Check in RM uart1 clocks and BRR configurations, same with other peripehrals
-            // probably something like in stm32l4xx_hal_rcc.c:
-            // HAL_RCC_GetPCLK1Freq(void) and HAL_RCC_GetPCLK2Freq(void) functions
+
+            // TODO someday - add enum to select clock source or deduce it from other registers
+            void ConfigureClockSource()
+            {
+                if (usart == USART1)
+                {
+                    RCC->CCIPR = (RCC->CCIPR & ~RCC_CCIPR_USART1SEL) | RCC_USART1CLKSOURCE_PCLK2;
+                }
+                else if (usart == USART2)
+                {
+                    RCC->CCIPR = (RCC->CCIPR & ~RCC_CCIPR_USART2SEL) | RCC_USART2CLKSOURCE_PCLK1;
+                }
+            }
+
             void UartConfig(const uint32_t baudRate)
             {
+                // On STM32L476, USART1 uses PCLK2 and USART2 uses PCLK1.
+                // For the default APB prescaler settings this is the same as SystemCoreClock,
+                // but the explicit clock selection keeps the peripheral configuration correct.
+
                 //USART Baud Rate Register BRR - speed of the USART
                 //UARTDIV (RM 40.8 USART baud rate register) = 80 000 000 / 115200 = 34,7
-                //USART2 uses PCLK1 clock by default (reset state 00)
-                //know from USART2SEL bits value
-                usart->BRR = SystemCoreClock / baudRate; /// system_stm32l4xx.c file
+
+                ConfigureClockSource();
+
+                usart->BRR = SystemCoreClock / baudRate; // system_stm32l4xx.c file
 
                 //frame 8m1 -- 0b00 - for USART_CR1 (reset value)
                 //PCE parity control enable: 0 - disabled (reset value), 1 - enabled
