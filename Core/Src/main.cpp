@@ -19,7 +19,6 @@
 #include "../../Scheduler/Task.hpp"
 #include "../../Scheduler/Scheduler.hpp"
 
-Peripherals::HAL::UartIT btHC06Uart{ huart1 }; //PA9 (TX), PA10 (RX)
 Peripherals::HAL::I2C_IT i2c1IT{ hi2c1 };
 Peripherals::HAL::Spi spi2{ hspi2 };
 Device::LPS25HB_Async lps25hbAsync{ i2c1IT };
@@ -35,16 +34,11 @@ int main()
     /* Initialize all configured peripherals */
     MX_GPIO_Init();
     //MX_USART2_UART_Init();
-    MX_USART1_UART_Init();
+    //MX_USART1_UART_Init();
     MX_I2C1_Init();
     MX_TIM3_Init();
     MX_SPI2_Init();
     
-    RegisterLevel::SoftwareTimer btUartResetTimer{ 2000 };
-    RegisterLevel::SoftwareTimer btUartPollTimer{ 1 };
-    //UcCommunication::LineParser lineParser{ uart2 };
-    UcCommunication::LineParser btLineParser{ btHC06Uart };
-
     float temperature = 0.0f;
     uint32_t pressure = 0;
 
@@ -76,25 +70,10 @@ int main()
         ld2.Toggle();
     }};
 
-    /*
-    Task<RegisterLevel::SoftwareTimer> uart2ReadLineTask{ 1, [&]()
-    {
-        if (const auto lineOpt = lineParser.ReadLine())
-        {
-            const auto line = *lineOpt;
-            const char* prefix = "RX Uart2IT: ";
-            uart2.Transmit(reinterpret_cast<const uint8_t*>(prefix), strlen(prefix));
-            uart2.Transmit(reinterpret_cast<const uint8_t*>(line.data()), line.size());
-            uart2.Transmit(reinterpret_cast<const uint8_t*>("\r\n"), 2);
-        }
-    }};
-    */
-
-    std::optional<uint8_t> previousReadValue = std::nullopt;
     Task<RegisterLevel::SoftwareTimer> ledControllerTask{ 10, [&]()
     {
         volatile const auto currentPulse = tim3_ch1_pa6.GetPulse();
-        const auto readValue = uart2.Read();
+        const auto readValue = uart1.Read();
 
         auto ledControlFunction = [&]()
         {
@@ -131,12 +110,10 @@ int main()
                 ledControlFunction();
             }            
         }
-        else if (!previousReadValue.has_value())
+        else
         {
-            ledControlFunction();   
+            ledControlFunction();
         }
-
-        previousReadValue = readValue;
     }};
     
     Scheduler<Task<RegisterLevel::SoftwareTimer>, 4> scheduler{ { readLPS25HBSensorTask
@@ -145,8 +122,9 @@ int main()
                                                       , ledControllerTask } };
 
     // LPS25HB test
-
-    uart2.ConfigureInterruptsPriority(IRQn_Type::USART2_IRQn, 1);
+    uart1.ConfigureInterruptsPriority(IRQn_Type::USART1_IRQn, 1);
+    uart1.Init(uart1Tx, uart1Rx, 9600);
+    uart2.ConfigureInterruptsPriority(IRQn_Type::USART2_IRQn, 2);
     uart2.Init(uart2Tx, uart2Rx, 115200);
     ld2.Init();
 
@@ -172,27 +150,8 @@ int main()
         // sudo rfcomm connect 0 <Address>
         // on second terminal window: screen /dev/rfcomm0 9600
 
+        uart1.ProcessTx();
         uart2.ProcessTx();
-        btHC06Uart.ProcessTx();
-        //uart2.ProcessRx();
-        btHC06Uart.ProcessRx();
-
-        //TODO: fix bthc06 reciever
-        if (const auto lineOpt = btLineParser.ReadLine())
-        {
-            const auto line = *lineOpt;
-            const char* prefix = "RX: ";
-            btHC06Uart.Transmit(reinterpret_cast<const uint8_t*>(prefix), strlen(prefix));
-            btHC06Uart.Transmit(reinterpret_cast<const uint8_t*>(line.data()), line.size());
-            btHC06Uart.Transmit(reinterpret_cast<const uint8_t*>("\r\n"), 2);
-        }
-        
-        if (btUartResetTimer.IsExpired())
-        {  
-            btUartResetTimer.Reset();
-            std::string_view resetMsg = "BT UART Reset\r\n";
-            btHC06Uart.Transmit(reinterpret_cast<const uint8_t*>(resetMsg.data()), resetMsg.size());
-        }
         
         // End of UART Test
         scheduler.Run();
@@ -228,35 +187,7 @@ void Error_Handler(void)
     /* USER CODE END Error_Handler_Debug */
 }
 
-extern "C" void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
-{
-    if (huart->Instance == USART1)
-    {
-        btHC06Uart.RxCpltCallback();
-    }
 
-    /*
-    if (huart->Instance == USART2)
-    {
-        uart2.RxCpltCallback();
-    }
-    */
-}
-
-extern "C" void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
-{
-    if (huart->Instance == USART1)
-    {
-        btHC06Uart.TxCpltCallback();
-    }
-
-    /*
-    if (huart->Instance == USART2)
-    {
-        uart2.TxCpltCallback();
-    }
-    */
-}
 
 extern "C" void HAL_I2C_MemRxCpltCallback(I2C_HandleTypeDef *hi2c)
 {
@@ -288,6 +219,11 @@ extern "C" void HAL_I2C_ErrorCallback(I2C_HandleTypeDef *hi2c)
     {
         // Optionally inspect hi2c->ErrorCode here for future debug.
     }
+}
+
+extern "C" void USART1_IRQHandler(void)
+{
+    uart1.IRQHandler();
 }
 
 extern "C" void USART2_IRQHandler(void)
