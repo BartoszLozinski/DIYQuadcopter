@@ -21,6 +21,7 @@ target_include_directories(${CMAKE_PROJECT_NAME}
 target_link_libraries(${CMAKE_PROJECT_NAME}
     PRIVATE
         I2C_HAL
+        SPI_HAL
         Gpio_RegisterLevel
         # Gpio_HAL
         # ADC_HAL

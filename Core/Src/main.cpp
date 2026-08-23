@@ -7,6 +7,7 @@
 
 #include "../../Peripherals/Timer/RegisterLevel/SoftwareTimer.hpp"
 #include "../../Peripherals/I2C/HAL/I2C_IT.hpp"
+#include "../../Peripherals/SPI/HAL/Spi.hpp"
 #include "../../Peripherals/UART/HAL/UartIT.hpp"
 #include "../../Peripherals/UART/LineParser.hpp"
 #include "../../Peripherals/Timer/HAL/Pwm.hpp"
@@ -20,6 +21,7 @@
 
 Peripherals::HAL::UartIT btHC06Uart{ huart1 }; //PA9 (TX), PA10 (RX)
 Peripherals::HAL::I2C_IT i2c1IT{ hi2c1 };
+Peripherals::HAL::Spi spi2{ hspi2 };
 Device::LPS25HB_Async lps25hbAsync{ i2c1IT };
 Peripherals::HAL::Pwm tim3_ch1_pa6{ htim3, TIM_CHANNEL_1 }; //PA6
 
@@ -206,7 +208,8 @@ int main()
             uint8_t led_command[3] = { mcp23s08WriteAddress, static_cast<uint8_t>(Device::MCP23S08Register::OLAT), mcp23s08_pg0_on };
 
             ioexp_cs.Clear();
-            HAL_SPI_Transmit(&hspi2, led_command, sizeof(led_command), HAL_MAX_DELAY);
+            [[maybe_unused]] volatile auto result = spi2.Transmit(led_command);
+            //HAL_SPI_Transmit(&hspi2, led_command, sizeof(led_command), HAL_MAX_DELAY);
             ioexp_cs.Set();
         }
     }
