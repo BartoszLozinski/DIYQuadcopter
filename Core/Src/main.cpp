@@ -91,6 +91,9 @@ int main()
             }
         };
 
+        // TODO:
+        // add turning off option
+        // and minimal pulse while turned on (simulation of not dropping too fast)
         if (readValue)
         {
             static constexpr int32_t minPulse = 0;
