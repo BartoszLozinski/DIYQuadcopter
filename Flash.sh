@@ -8,4 +8,4 @@ fi
 
 openocd -f /usr/share/openocd/scripts/interface/stlink.cfg \
         -f /usr/share/openocd/scripts/target/stm32l4x.cfg \
-        -c "program build/$CONFIG/Core/EnvironmentStation verify reset exit"
+        -c "program build/$CONFIG/Core/DIYQuadcopter verify reset exit"

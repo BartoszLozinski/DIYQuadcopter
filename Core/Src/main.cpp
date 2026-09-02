@@ -7,7 +7,6 @@
 
 #include "../../Peripherals/Timer/RegisterLevel/SoftwareTimer.hpp"
 #include "../../Peripherals/I2C/HAL/I2C_IT.hpp"
-#include "../../Peripherals/SPI/HAL/Spi.hpp"
 #include "../../Peripherals/UART/HAL/UartIT.hpp"
 #include "../../Peripherals/UART/LineParser.hpp"
 #include "../../Peripherals/Timer/HAL/Pwm.hpp"
@@ -20,11 +19,10 @@
 #include "../../Scheduler/Scheduler.hpp"
 
 Peripherals::HAL::I2C_IT i2c1IT{ hi2c1 };
-Peripherals::HAL::Spi spi2{ hspi2 };
 Device::LPS25HB_Async lps25hbAsync{ i2c1IT };
 Peripherals::HAL::Pwm tim3_ch1_pa6{ htim3, TIM_CHANNEL_1 }; //PA6
 
-//TODO remove unsued code for quadcopter (environtment stattion artifacts)
+//TODO remove generated code for UART and set up unly with RegisterLevel classes
 
 int main()
 {
@@ -33,15 +31,12 @@ int main()
     HAL_Init();
     SystemClock_Config();
     /* Initialize all configured peripherals */
-    MX_GPIO_Init();
-    //MX_USART2_UART_Init();
-    //MX_USART1_UART_Init();
+
     MX_I2C1_Init();
     MX_TIM3_Init();
-    MX_SPI2_Init();
     
-    float temperature = 0.0f;
-    uint32_t pressure = 0;
+    volatile float temperature = 0.0f;
+    volatile uint32_t pressure = 0;
 
     Task<RegisterLevel::SoftwareTimer> readLPS25HBSensorTask{ 50, [&]()
     {
@@ -132,19 +127,6 @@ int main()
     uart2.Init(uart2Tx, uart2Rx, 115200);
     ld2.Init();
 
-    ioexp_cs.Init();
-    ioexp_cs.Set();
-    //pc2 - spi2_miso
-    //pc3 - spi2_mosi
-    //pb10 - spi2_sck`
-    RegisterLevel::SoftwareTimer mcp23s08ToggleTimer{ 250 };
-    static constexpr uint8_t mcp23s08WriteAddress = 0x40;
-    uint8_t mcp23s08_pg0_on = 0x01;
-    uint8_t gpio_config[3] { mcp23s08WriteAddress, static_cast<uint8_t>(Device::MCP23S08Register::IODIR), 0xFE }; //all input but pg0
-    ioexp_cs.Clear();
-    HAL_SPI_Transmit(&hspi2, gpio_config, sizeof(gpio_config), HAL_MAX_DELAY);
-    ioexp_cs.Set();
-
     tim3_ch1_pa6.Start();
 
     while (true)
@@ -157,28 +139,9 @@ int main()
         uart1.ProcessTx();
         uart2.ProcessTx();
         
-        // End of UART Test
         scheduler.Run();
-
-        if (mcp23s08ToggleTimer.IsExpired())
-        {
-            mcp23s08ToggleTimer.Reset();
-            if (mcp23s08_pg0_on == 0x01)
-                mcp23s08_pg0_on = 0x00;
-            else
-                mcp23s08_pg0_on = 0x01;
-
-            uint8_t led_command[3] = { mcp23s08WriteAddress, static_cast<uint8_t>(Device::MCP23S08Register::OLAT), mcp23s08_pg0_on };
-
-            ioexp_cs.Clear();
-            [[maybe_unused]] volatile auto result = spi2.Transmit(led_command);
-            //HAL_SPI_Transmit(&hspi2, led_command, sizeof(led_command), HAL_MAX_DELAY);
-            ioexp_cs.Set();
-        }
     }
 }
-
-
 
 void Error_Handler(void)
 {
@@ -190,8 +153,6 @@ void Error_Handler(void)
     }
     /* USER CODE END Error_Handler_Debug */
 }
-
-
 
 extern "C" void HAL_I2C_MemRxCpltCallback(I2C_HandleTypeDef *hi2c)
 {

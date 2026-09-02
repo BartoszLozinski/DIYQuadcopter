@@ -6,22 +6,18 @@ if [[ "$CONFIG" != "Debug" && "$CONFIG" != "Release" ]]; then
     exit 1
 fi
 
-if [ ! -d build ]; then
-    mkdir build
-fi
-
 if [ ! -d "build/$CONFIG" ]; then
-    mkdir "build/$CONFIG"
+    mkdir -p "build/$CONFIG"
 fi
 
 cd "build/$CONFIG"
 cmake ../.. -G Ninja -DCMAKE_TOOLCHAIN_FILE=../../cmake/toolchain-arm-gcc.cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_BUILD_TYPE=$CONFIG
 ninja
 
-cd ../..
+cd ../../
 
 if [ ! -d "buildTests/$CONFIG" ]; then
-    mkdir "buildTests/$CONFIG"
+    mkdir -p "buildTests/$CONFIG"
 fi
 
 cd "buildTests/$CONFIG"
