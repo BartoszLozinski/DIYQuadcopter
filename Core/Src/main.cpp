@@ -24,6 +24,7 @@ Peripherals::HAL::Spi spi2{ hspi2 };
 Device::LPS25HB_Async lps25hbAsync{ i2c1IT };
 Peripherals::HAL::Pwm tim3_ch1_pa6{ htim3, TIM_CHANNEL_1 }; //PA6
 
+//TODO remove unsued code for quadcopter (environtment stattion artifacts)
 
 int main()
 {
