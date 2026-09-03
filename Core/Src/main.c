@@ -57,7 +57,6 @@ UART_HandleTypeDef huart2;
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
-static void MX_USART2_UART_Init(void);
 static void MX_USART1_UART_Init(void);
 static void MX_I2C1_Init(void);
 static void MX_TIM3_Init(void);
@@ -67,16 +66,6 @@ static void MX_TIM3_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
-int __io_putchar(int ch)
-{
-	if (ch == '\n')
-		__io_putchar('\r');
-
-	HAL_UART_Transmit(&huart2, (uint8_t*)&ch, 1, HAL_MAX_DELAY);
-
-	return 1;
-}
 
 /* USER CODE END 0 */
 
@@ -108,7 +97,6 @@ int main(void)
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
-  MX_USART2_UART_Init();
   MX_USART1_UART_Init();
   MX_I2C1_Init();
   MX_TIM3_Init();
@@ -119,41 +107,8 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 
-  HAL_TIM_IC_Start(&htim2, TIM_CHANNEL_1);
-  HAL_TIM_IC_Start(&htim2, TIM_CHANNEL_2);
-  HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_3);
-
-  HAL_ADCEx_Calibration_Start(&hadc1, ADC_SINGLE_ENDED);
-  HAL_ADC_Start(&hadc1);
-
-  HAL_Delay(1000);
-
-  uint32_t start = 0;
-  uint32_t stop = 0;
-  float temp = 0;
-  uint32_t adcValue = 0;
-  float airSoundVelocity = 340.f; // m / s
-  float distance = 0.f; //cm
-  static const unsigned us_in_s = 1000000;
-  static const uint16_t ADC_MAX_VALUE = 4096;
-  static const float ADC_MAX_VOLTAGE = 3.3f;
-  static const uint8_t V_TO_C_CONVERSION = 100; // [C/V]
-
   while (1)
   {
-	  adcValue = HAL_ADC_GetValue(&hadc1);
-	  temp = adcValue * V_TO_C_CONVERSION * ADC_MAX_VOLTAGE / ADC_MAX_VALUE;
-	  airSoundVelocity = 331.8f + 0.6f * temp;
-
-	  start = HAL_TIM_ReadCapturedValue(&htim2, TIM_CHANNEL_1);
-	  stop = HAL_TIM_ReadCapturedValue(&htim2, TIM_CHANNEL_2);
-        distance = (stop - start) * (airSoundVelocity / (2 * us_in_s)) * 100;
-	  printf("Distance: %.1f [cm]\n", distance);
-	  printf("ADC: %lu[-], Temp: %.1f [C], AirSoundVelocity: %.1f [m/s]\n", adcValue, temp, airSoundVelocity);
-	  HAL_Delay(500);
-
-	  //forbot - 1/3 of the lesson 14
-
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -348,41 +303,6 @@ static void MX_USART1_UART_Init(void)
   /* USER CODE BEGIN USART1_Init 2 */
 
   /* USER CODE END USART1_Init 2 */
-
-}
-
-/**
-  * @brief USART2 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_USART2_UART_Init(void)
-{
-
-  /* USER CODE BEGIN USART2_Init 0 */
-
-  /* USER CODE END USART2_Init 0 */
-
-  /* USER CODE BEGIN USART2_Init 1 */
-
-  /* USER CODE END USART2_Init 1 */
-  huart2.Instance = USART2;
-  huart2.Init.BaudRate = 115200;
-  huart2.Init.WordLength = UART_WORDLENGTH_8B;
-  huart2.Init.StopBits = UART_STOPBITS_1;
-  huart2.Init.Parity = UART_PARITY_NONE;
-  huart2.Init.Mode = UART_MODE_TX_RX;
-  huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
-  huart2.Init.OverSampling = UART_OVERSAMPLING_16;
-  huart2.Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
-  huart2.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
-  if (HAL_UART_Init(&huart2) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN USART2_Init 2 */
-
-  /* USER CODE END USART2_Init 2 */
 
 }
 
