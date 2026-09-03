@@ -22,7 +22,7 @@ Peripherals::HAL::I2C_IT i2c1IT{ hi2c1 };
 Device::LPS25HB_Async lps25hbAsync{ i2c1IT };
 Peripherals::HAL::Pwm tim3_ch1_pa6{ htim3, TIM_CHANNEL_1 }; //PA6
 
-//TODO remove generated code for UART and set up unly with RegisterLevel classes
+//TODO add ICM-20948 accelerometer (i2C then SPI)
 
 int main()
 {
