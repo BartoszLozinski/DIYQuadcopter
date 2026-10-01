@@ -42,3 +42,6 @@ public:
             return BufferSize - (tail - head);
     }
 };
+
+template<std::size_t BufferSize>
+using UartRingBuffer = RingBuffer<uint8_t, BufferSize>;

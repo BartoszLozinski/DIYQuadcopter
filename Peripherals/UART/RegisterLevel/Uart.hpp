@@ -21,12 +21,12 @@
 #include "UartBase.hpp"
 #include "Utils/RingBuffer.hpp"
 
-
-
 namespace Peripherals
 {
     namespace RegisterLevel
     {
+        // TODO: move to cpp and export quantizied buffer sizes?
+
         template< std::size_t bufferSize = 64>
         class Uart : public IUart
             , public UartBase<USART_TypeDef, bufferSize>
@@ -37,7 +37,6 @@ namespace Peripherals
 
             uint32_t overflowCount = 0;
             volatile bool txBusy{ false };
-
 
             void EnableRxInterrupt()
             {

@@ -8,9 +8,6 @@ extern "C"
 #include "stm32l4xx_hal.h"
 }
 
-template<std::size_t BufferSize>
-using UartRingBuffer = RingBuffer<uint8_t, BufferSize>;
-
 namespace Peripherals
 {
     namespace HAL

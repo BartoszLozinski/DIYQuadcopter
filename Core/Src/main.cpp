@@ -7,7 +7,6 @@
 
 #include "Peripherals/Timer/RegisterLevel/SoftwareTimer.hpp"
 #include "Peripherals/I2C/HAL/I2C_IT.hpp"
-#include "Peripherals/UART/HAL/UartIT.hpp"
 #include "Peripherals/UART/LineParser.hpp"
 #include "Peripherals/Timer/HAL/Pwm.hpp"
 #include "Devices/LPS25HB_Async.hpp"
