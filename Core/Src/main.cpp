@@ -21,7 +21,8 @@ Peripherals::HAL::I2C_IT i2c1IT{ hi2c1 };
 Device::LPS25HB_Async lps25hbAsync{ i2c1IT };
 Peripherals::HAL::Pwm tim3_ch1_pa6{ htim3, TIM_CHANNEL_1 }; //PA6
 
-//TODO add ICM-20948 accelerometer (i2C then SPI)
+// TODO add ICM-20948 accelerometer (i2C then SPI)
+// TODO add documentation
 
 int main()
 {
@@ -189,7 +190,7 @@ extern "C" void USART1_IRQHandler(void)
 {
     uart1.IRQHandler();
 }
-
+//TODO move it, so it will be used only in the stm32l4xx_it.c
 extern "C" void USART2_IRQHandler(void)
 {
     uart2.IRQHandler();

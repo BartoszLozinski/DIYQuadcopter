@@ -58,8 +58,8 @@ volatile uint32_t systemTickCounter = 0;
 
 /* External variables --------------------------------------------------------*/
 extern I2C_HandleTypeDef hi2c1;
+extern I2C_HandleTypeDef hi2c2;
 extern TIM_HandleTypeDef htim3;
-extern UART_HandleTypeDef huart1;
 extern UART_HandleTypeDef huart2;
 /* USER CODE BEGIN EV */
 
@@ -234,18 +234,18 @@ void I2C1_EV_IRQHandler(void)
 }
 
 /**
-  * @brief This function handles USART1 global interrupt.
+  * @brief This function handles I2C2 event interrupt.
   */
-//void USART1_IRQHandler(void)
-//{
-  /* USER CODE BEGIN USART1_IRQn 0 */
+void I2C2_EV_IRQHandler(void)
+{
+  /* USER CODE BEGIN I2C2_EV_IRQn 0 */
 
-  /* USER CODE END USART1_IRQn 0 */
-  //HAL_UART_IRQHandler(&huart1);
-  /* USER CODE BEGIN USART1_IRQn 1 */
+  /* USER CODE END I2C2_EV_IRQn 0 */
+  HAL_I2C_EV_IRQHandler(&hi2c2);
+  /* USER CODE BEGIN I2C2_EV_IRQn 1 */
 
-  /* USER CODE END USART1_IRQn 1 */
-//}
+  /* USER CODE END I2C2_EV_IRQn 1 */
+}
 
 /**
   * @brief This function handles USART2 global interrupt.
@@ -259,7 +259,7 @@ void I2C1_EV_IRQHandler(void)
   // move main.cpp code here
 
   /* USER CODE END USART2_IRQn 0 */
-  //HAL_UART_IRQHandler(&huart2);
+//  HAL_UART_IRQHandler(&huart2);
   /* USER CODE BEGIN USART2_IRQn 1 */
 
   /* USER CODE END USART2_IRQn 1 */

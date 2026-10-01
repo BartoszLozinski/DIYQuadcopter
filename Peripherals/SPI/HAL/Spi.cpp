@@ -1,5 +1,7 @@
 #include "Spi.hpp"
 
+#if defined(HAL_SPI_MODULE_ENABLED)
+
 namespace Peripherals
 {
     namespace HAL
@@ -26,3 +28,5 @@ namespace Peripherals
         }
     };
 };
+
+#endif
