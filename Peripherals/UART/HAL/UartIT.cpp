@@ -1,3 +1,5 @@
+#if defined(HAL_UART_MODULE_ENABLED)
+
 #include "UartIT.hpp"
 
 namespace Peripherals
@@ -84,3 +86,5 @@ namespace Peripherals
 }
 
 template class Peripherals::HAL::UartIT<64>;
+
+#endif

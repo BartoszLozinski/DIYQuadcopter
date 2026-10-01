@@ -27,7 +27,7 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         # ADC_HAL
         Timer
         Timer_RegisterLevel
-        UART_HAL
+        # UART_HAL
         UART_RegisterLevel
         Devices
         Scheduler

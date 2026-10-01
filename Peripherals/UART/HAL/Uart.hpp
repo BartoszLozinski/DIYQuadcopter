@@ -8,6 +8,8 @@ extern "C"
 #include "stm32l4xx_hal.h"
 }
 
+#if defined(HAL_UART_MODULE_ENABLED)
+
 template<std::size_t BufferSize>
 using UartRingBuffer = RingBuffer<uint8_t, BufferSize>;
 
@@ -58,6 +60,8 @@ namespace Peripherals
         };
     }
 }
+
+#endif
 
 /*
 

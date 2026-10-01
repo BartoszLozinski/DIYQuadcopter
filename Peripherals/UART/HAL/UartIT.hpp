@@ -8,6 +8,8 @@ extern "C"
 #include "stm32l4xx_hal.h"
 }
 
+#if defined(HAL_UART_MODULE_ENABLED)
+
 namespace Peripherals
 {
     namespace HAL
@@ -48,3 +50,5 @@ namespace Peripherals
         };
     }
 }
+
+#endif
