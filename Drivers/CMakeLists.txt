@@ -6,9 +6,16 @@ file(GLOB HAL_SOURCES
     STM32L4xx_HAL_Driver/Src/*.c
 )
 
+cmake_path(GET CMAKE_CURRENT_SOURCE_DIR PARENT_PATH parent_dir)
+
+
 target_sources(${target_name}
     PRIVATE
-        ${HAL_SOURCES})
+        ${HAL_SOURCES}
+    PUBLIC
+        FILE_SET HEADERS
+        BASE_DIRS ${parent_dir}
+)
 
 configure_embedded_target(${target_name})
 

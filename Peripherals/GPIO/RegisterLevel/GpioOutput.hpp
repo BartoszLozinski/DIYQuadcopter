@@ -1,6 +1,6 @@
 #pragma once
 #include "GpioBase.hpp"
-#include "../IGpioOutput.hpp"
+#include "IGpioOutput.hpp"
 
 namespace Peripherals
 {

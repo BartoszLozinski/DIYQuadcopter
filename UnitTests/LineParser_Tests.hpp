@@ -2,7 +2,7 @@
 
 #include <gtest/gtest.h>
 #include <queue>
-#include "../Peripherals/UART/LineParser.hpp"
+#include "Peripherals/UART/LineParser.hpp"
 
 struct FakeUart
 {

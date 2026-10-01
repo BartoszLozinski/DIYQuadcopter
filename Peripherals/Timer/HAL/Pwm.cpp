@@ -1,5 +1,5 @@
 #include "Pwm.hpp"
-#include "../../../Drivers/CMSIS/Device/ST/STM32L4xx/Include/stm32l4xx.h"
+#include "Drivers/CMSIS/Device/ST/STM32L4xx/Include/stm32l4xx.h"
 
 namespace Peripherals
 {
@@ -8,7 +8,7 @@ namespace Peripherals
         Pwm::Pwm(TIM_HandleTypeDef& timer_, const uint32_t channel_)
             : timer(timer_)
             , channel(channel_)
-        {}; ///cube initialized
+        {}; //cube initialized
 
         uint16_t Pwm::GetCounter_Impl() const
         {

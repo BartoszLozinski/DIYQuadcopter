@@ -1,10 +1,10 @@
 #pragma once
 
-#include "../Devices/LPS25HB.hpp"
-#include "../Devices/LPS25HB_Async.hpp"
+#include "Devices/LPS25HB.hpp"
+#include "Devices/LPS25HB_Async.hpp"
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
-#include "../Peripherals/I2C/I2CBase.hpp"
+#include "Peripherals/I2C/I2CBase.hpp"
 
 
 struct I2CMock : public Peripherals::I2CBase

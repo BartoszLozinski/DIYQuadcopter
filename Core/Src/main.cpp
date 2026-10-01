@@ -5,18 +5,18 @@
 
 #include "stm32CubeMXGenerated.h"
 
-#include "../../Peripherals/Timer/RegisterLevel/SoftwareTimer.hpp"
-#include "../../Peripherals/I2C/HAL/I2C_IT.hpp"
-#include "../../Peripherals/UART/HAL/UartIT.hpp"
-#include "../../Peripherals/UART/LineParser.hpp"
-#include "../../Peripherals/Timer/HAL/Pwm.hpp"
-#include "../../Devices/LPS25HB_Async.hpp"
-#include "../../Devices/MCP23S08.hpp"
+#include "Peripherals/Timer/RegisterLevel/SoftwareTimer.hpp"
+#include "Peripherals/I2C/HAL/I2C_IT.hpp"
+#include "Peripherals/UART/HAL/UartIT.hpp"
+#include "Peripherals/UART/LineParser.hpp"
+#include "Peripherals/Timer/HAL/Pwm.hpp"
+#include "Devices/LPS25HB_Async.hpp"
+#include "Devices/MCP23S08.hpp"
 
 #include "../Inc/peripheralsDefinition.h"
 
-#include "../../Scheduler/Task.hpp"
-#include "../../Scheduler/Scheduler.hpp"
+#include "Scheduler/Task.hpp"
+#include "Scheduler/Scheduler.hpp"
 
 Peripherals::HAL::I2C_IT i2c1IT{ hi2c1 };
 Device::LPS25HB_Async lps25hbAsync{ i2c1IT };
