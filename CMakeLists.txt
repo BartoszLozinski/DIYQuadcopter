@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.28)
-project(DIYQuadcopter C CXX ASM)
+project(DrivingRobot C CXX ASM)
 
 include(${CMAKE_SOURCE_DIR}/cmake/configuration.cmake)
 
