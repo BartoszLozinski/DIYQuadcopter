@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../../Peripherals/UART/RegisterLevel/Uart.hpp"
-#include "../../Peripherals/GPIO/RegisterLevel/GpioAlternate.hpp"
-#include "../../Peripherals/GPIO/RegisterLevel/GpioOutput.hpp"
+#include "Peripherals/UART/RegisterLevel/Uart.hpp"
+#include "Peripherals/GPIO/RegisterLevel/GpioAlternate.hpp"
+#include "Peripherals/GPIO/RegisterLevel/GpioOutput.hpp"
 
 
 Peripherals::RegisterLevel::GpioAlternate<9> uart1Tx{ GPIOA, Peripherals::RegisterLevel::Gpio::AlternateFunction::AF7 };
