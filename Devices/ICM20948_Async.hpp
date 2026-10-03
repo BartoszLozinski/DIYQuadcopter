@@ -18,6 +18,8 @@ namespace Device
             Error,
         };
 
+        static constexpr uint8_t addressOffset = 1; // STM32 HAL library uses 8-bit address, so we need to shift the 7-bit address by 1 to the left
+
         Peripherals::I2CBase_IT& i2c;
         State state = State::Idle;
         bool isAwake = false;
@@ -31,8 +33,11 @@ namespace Device
 
     public:
         ICM20948_Async(Peripherals::I2CBase_IT& i2c_);
+
+        [[nodiscard]] bool IsAwake() const;
         void WakeUp() override;
         void OnTxComplete();
         void OnRxComplete();
+        std::optional<uint8_t> ReadWhoAmI();
     };
 };

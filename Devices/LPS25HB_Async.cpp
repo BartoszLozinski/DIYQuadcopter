@@ -39,7 +39,7 @@ namespace Device
     {
         if (state == State::Idle)
         {
-            state = i2c.Read(Registers::ADDR
+            state = i2c.Read(Registers::ADDR << addressOffset
                             , reg
                             , std::span<uint8_t>(&readRegisterBuffer, sizeof(readRegisterBuffer))) == Peripherals::I2CResult::Success ? State::TransferScheduled : State::Error;
         }
@@ -136,13 +136,13 @@ namespace Device
         }
 
         measurementFrequencyCtrlReg1 = (measurementFrequencyCtrlReg1 & ~ODR_MASK) | (regValue & ODR_MASK);
-        i2c.Write(Registers::ADDR, Registers::CTRL_REG1, std::span<uint8_t>(&measurementFrequencyCtrlReg1, sizeof(measurementFrequencyCtrlReg1)));
+        i2c.Write(Registers::ADDR << addressOffset, Registers::CTRL_REG1, std::span<uint8_t>(&measurementFrequencyCtrlReg1, sizeof(measurementFrequencyCtrlReg1)));
         state = State::SetupMeasurementFrequencyScheduled;        
     }
 
     void LPS25HB_Async::StartRead(const int16_t reg, std::span<uint8_t>(buffer), const State successfulState)
     {
-        state = i2c.Read(Registers::ADDR
+        state = i2c.Read(Registers::ADDR << addressOffset
                         , reg | AUTO_INCREMENT
                         , buffer) == Peripherals::I2CResult::Success ? successfulState : State::Error;
     }
@@ -163,7 +163,7 @@ namespace Device
             i2c.NotifyDataIsRead();
             state = State::WakeUpScheduled;
             wakeUpCurrentCtrlReg1 = static_cast<uint8_t>(wakeUpCurrentCtrlReg1 | Registers::CTRL_REG1_PD);
-            i2c.Write(Registers::ADDR, Registers::CTRL_REG1, std::span<uint8_t>(&wakeUpCurrentCtrlReg1, sizeof(wakeUpCurrentCtrlReg1)));
+            i2c.Write(Registers::ADDR << addressOffset, Registers::CTRL_REG1, std::span<uint8_t>(&wakeUpCurrentCtrlReg1, sizeof(wakeUpCurrentCtrlReg1)));
             break;
         case State::WakeUpCompleted:
             i2c.NotifyDataIsRead();

@@ -9,8 +9,10 @@
 #include "Peripherals/I2C/HAL/I2C_IT.hpp"
 #include "Peripherals/UART/LineParser.hpp"
 #include "Peripherals/Timer/HAL/Pwm.hpp"
+
 #include "Devices/LPS25HB_Async.hpp"
 #include "Devices/MCP23S08.hpp"
+#include "Devices/ICM20948_Async.hpp"
 
 #include "../Inc/peripheralsDefinition.h"
 
@@ -18,8 +20,11 @@
 #include "Scheduler/Scheduler.hpp"
 
 Peripherals::HAL::I2C_IT i2c1IT{ hi2c1 };
-Device::LPS25HB_Async lps25hbAsync{ i2c1IT };
+Peripherals::HAL::I2C_IT i2c2IT{ hi2c2 };
 Peripherals::HAL::Pwm tim3_ch1_pa6{ htim3, TIM_CHANNEL_1 }; //PA6
+
+Device::LPS25HB_Async lps25hbAsync{ i2c1IT };
+Device::ICM20948_Async icm20948Async{ i2c2IT };
 
 // TODO add ICM-20948 accelerometer (i2C then SPI)
 // TODO add documentation
@@ -33,6 +38,7 @@ int main()
     /* Initialize all configured peripherals */
 
     MX_I2C1_Init();
+    MX_I2C2_Init();
     MX_TIM3_Init();
     
     volatile float temperature = 0.0f;
@@ -114,11 +120,31 @@ int main()
             ledControlFunction();
         }
     }};
+
+    Task<RegisterLevel::SoftwareTimer> readICM20948WhoAmI{ 250, [&]()
+    {
+        if (icm20948Async.IsAwake())
+        {
+            if (const auto whoAmI = icm20948Async.ReadWhoAmI(); whoAmI)
+            {
+                char messageBuffer[20];
+                snprintf(messageBuffer, sizeof(messageBuffer), "Who Am I: 0x%02X\r\n", whoAmI.value());
+                uart2.Transmit(reinterpret_cast<const uint8_t*>(messageBuffer), strlen(messageBuffer));
+            }
+        }
+        else
+        {
+            icm20948Async.WakeUp();
+            static constexpr uint8_t wakingUpMessage[] = "Waking up ICM-20948\r\n";
+            uart2.Transmit(reinterpret_cast<const uint8_t*>(wakingUpMessage), sizeof(wakingUpMessage) - 1);
+        }
+    }};
     
-    Scheduler<Task<RegisterLevel::SoftwareTimer>, 4> scheduler{ { readLPS25HBSensorTask
+    Scheduler<Task<RegisterLevel::SoftwareTimer>, 5> scheduler{ { readLPS25HBSensorTask
                                                       , printTemperaturePressureTask
                                                       , ld2Task
-                                                      , ledControllerTask } };
+                                                      , ledControllerTask
+                                                      , readICM20948WhoAmI } };
 
     // LPS25HB test
     uart1.ConfigureInterruptsPriority(IRQn_Type::USART1_IRQn, 1);
@@ -160,6 +186,11 @@ extern "C" void HAL_I2C_MemRxCpltCallback(I2C_HandleTypeDef *hi2c)
     {
         lps25hbAsync.OnRxComplete();
     }
+
+    if (hi2c->Instance == I2C2)
+    {
+        icm20948Async.OnRxComplete();
+    }
 }
 
 extern "C" void HAL_I2C_MemTxCpltCallback(I2C_HandleTypeDef *hi2c)
@@ -168,6 +199,10 @@ extern "C" void HAL_I2C_MemTxCpltCallback(I2C_HandleTypeDef *hi2c)
     {
         lps25hbAsync.OnTxComplete();
     }
+    if (hi2c->Instance == I2C2)
+    {
+        icm20948Async.OnTxComplete();
+    }
 }
 
 extern "C" void HAL_I2C_MasterTxCpltCallback(I2C_HandleTypeDef *hi2c)
@@ -175,6 +210,11 @@ extern "C" void HAL_I2C_MasterTxCpltCallback(I2C_HandleTypeDef *hi2c)
     if (hi2c->Instance == I2C1)
     {
         lps25hbAsync.OnTxComplete();
+    }
+
+    if (hi2c->Instance == I2C2)
+    {
+        icm20948Async.OnTxComplete();
     }
 }
 

@@ -13,7 +13,7 @@ namespace Device
         enum class RegisterAddresses : uint8_t
         {
             //Bank 0 register map
-            ADDR = 0x68, //0b1101000 - 7-bit I2C address for ICM-20948, last bit for write/read (0 - write, 1 - read) - documentation page 28/89
+            ADDR = 0x69, // 7-bit I2C address (AD0 high)
             WHO_AM_I = 0x00, // Value for ICM-20948 is 0xEA
             USER_CTRL = 0x03,
             LP_CONFIG = 0x05,

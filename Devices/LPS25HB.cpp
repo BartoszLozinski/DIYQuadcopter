@@ -8,13 +8,13 @@ namespace Device
 
     void LPS25HB::WriteRegister(const uint8_t reg, uint8_t value)
     {
-        i2c.Write(Registers::ADDR, reg, std::span<uint8_t>(&value, sizeof(value)));
+        i2c.Write(Registers::ADDR << addressOffset, reg, std::span<uint8_t>(&value, sizeof(value)));
     }
 
     std::optional<uint8_t> LPS25HB::ReadRegister(const uint8_t reg) const
     {
         uint8_t result = 0;
-        if (i2c.Read(Registers::ADDR, reg, std::span<uint8_t>(&result, sizeof(result))) == Peripherals::I2CResult::Success)
+        if (i2c.Read(Registers::ADDR << addressOffset, reg, std::span<uint8_t>(&result, sizeof(result))) == Peripherals::I2CResult::Success)
             return result;
             
         return std::nullopt;
@@ -28,7 +28,7 @@ namespace Device
     std::optional<float> LPS25HB::ReadTemperature()
     {
         int16_t rawTemp = 0;
-        if (i2c.Read(Registers::ADDR
+        if (i2c.Read(Registers::ADDR << addressOffset
                     , Registers::TEMP_OUT_L | AUTO_INCREMENT
                     , std::span<uint8_t>(reinterpret_cast<uint8_t*>(&rawTemp)
                                         , sizeof(rawTemp))) == Peripherals::I2CResult::Success)
@@ -42,7 +42,7 @@ namespace Device
     std::optional<int32_t> LPS25HB::ReadPressure() 
     {
         int32_t rawPressure = 0;
-        if (i2c.Read(Registers::ADDR
+        if (i2c.Read(Registers::ADDR << addressOffset
             , Registers::PRESS_OUT_XL | AUTO_INCREMENT
             , std::span<uint8_t>(reinterpret_cast<uint8_t*>(&rawPressure)
             , sizeof(rawPressure) - 1)) == Peripherals::I2CResult::Success)
