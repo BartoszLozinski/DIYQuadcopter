@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Peripherals/I2C/I2CBase.hpp"
+#include "Peripherals/I2C/I2CBase.hpp"
 #include "LPS25HBBase.hpp"
 #include <utility>
 #include <functional>
